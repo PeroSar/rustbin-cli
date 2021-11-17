@@ -6,7 +6,7 @@ G="\e[1;32m"
 Y="\e[1;33m"
 RT="\e[0m"
 
-# Fumctions for printing
+# Functions for printing
 good() {
 	echo -e "[${G}*${RT}] $*"
 }
