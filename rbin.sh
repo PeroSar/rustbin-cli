@@ -62,19 +62,21 @@ if [[ -z "${FILES[*]}" && -z "${SHORTS[*]}" && -z "${DELETES[*]}" ]]; then
 	usage
 fi
 
-# Copy-to-clipboard function, currently only supports termux
+# Copy-to-clipboard function
 clip() {
 	if [ -n "$(command -v termux-clipboard-set)" ]; then
 		# use timeout in case termux-api is installed but the termux:api app is missing
 		# taken from termux-info
 		timeout 3 termux-clipboard-set <<<"$1"
 		timeout 3 termux-toast "Copied to clipboard"
+	elif [ -n "$(command -v xclip)" ]; then
+		xclip -selection c <<<"$1"
 	fi
 }
 
 # Make request with form data
 mkreq_form() {
-    # Send `Expire` header if specified
+	# Send `Expire` header if specified
 	if [[ -z "$EXPIRE_TIME" ]]; then
 		curl --silent --form "$1"="$2" "$HOST"
 	else
