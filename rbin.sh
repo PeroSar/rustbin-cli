@@ -70,7 +70,7 @@ while getopts ":h:f:s:e:d:c" arg; do
 			-e "s|@CLIP@|$CLIP|g" \
 			-e "s|@CLIP_CMD@|$CLIP_CMD|g" >~/.rbinrc
 
-        good "Generated config"
+		good "Generated config"
 
 		exit 0
 		;;
@@ -137,16 +137,17 @@ paste_all() {
 
 	for file in "${FILES[@]}"; do
 
+		local EXT
+		case "$file" in
+		*"."*)
+			EXT=".${file##*.}"
+			;;
+		esac
+
 		# Handle errors if file doesn't exist
 		if [[ ! -f "$file" ]]; then
 			bad "File '$file' doesn't exist!"
 			continue
-		fi
-
-		if ! grep -FqI '' "$file"; then
-			# This is a binary file,
-			# Using file form field instead of highlight for this.
-			local FORM_FIELD="file"
 		fi
 
 		((START++))
@@ -154,7 +155,7 @@ paste_all() {
 
 		local o
 		o=$(mkreq_form "$FORM_FIELD" "@${file}")
-		echo "Pasted to $o"
+		echo "Pasted to $o${EXT}"
 		clip "$o"
 
 	done
