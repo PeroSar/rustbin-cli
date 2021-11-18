@@ -70,6 +70,8 @@ while getopts ":h:f:s:e:d:c" arg; do
 			-e "s|@CLIP@|$CLIP|g" \
 			-e "s|@CLIP_CMD@|$CLIP_CMD|g" >~/.rbinrc
 
+        good "Generated config"
+
 		exit 0
 		;;
 	*)
