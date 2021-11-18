@@ -8,14 +8,14 @@ on:
     branches:
       - master
 
-env:
-  CARGO_TERM_COLOR: always
-
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - name: Shellcheck
+        uses: ludeeus/action-shellcheck@master
 
       - name: Test upload file
         run: ./rbin.sh -f rbin.sh -e 30s

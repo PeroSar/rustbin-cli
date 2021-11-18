@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# shellcheck source=/dev/null
+
 # Colours
 R="\e[1;31m"
 G="\e[1;32m"
@@ -27,7 +29,7 @@ ${G}-s${RT} <URL> - Shorten a URL (example: https://google.com)" >&2
 }
 
 # Parse command-line arguments
-while getopts ":h:f:s:e:d:" arg; do
+while getopts ":h:f:s:e:d:c" arg; do
 	case "${arg}" in
 	"h")
 		HOST="${OPTARG}"
@@ -44,6 +46,32 @@ while getopts ":h:f:s:e:d:" arg; do
 	"e")
 		EXPIRE_TIME="${OPTARG}"
 		;;
+	"c")
+		read -r -p "Enter host: " HOST
+		read -r -p "Do you want to copy paste URLs? (y/n): " CLIP
+		read -r -p "Enter your clipboard command (leave empty for default): " CLIP_CMD
+
+		case "$CLIP" in
+		"y" | "Y")
+			CLIP="true"
+			;;
+		"n" | "N")
+			CLIP="false"
+			;;
+		esac
+
+		if [[ ! -f ./rbinrc.template ]]; then
+			bad "Config can only be generated inside cloned repository"
+			exit 1
+		fi
+
+		sed ./rbinrc.template \
+			-e "s|@HOST@|$HOST|g" \
+			-e "s|@CLIP@|$CLIP|g" \
+			-e "s|@CLIP_CMD@|$CLIP_CMD|g" >~/.rbinrc
+
+		exit 0
+		;;
 	*)
 		usage
 		;;
@@ -55,6 +83,7 @@ shift "$((OPTIND - 1))"
 # Default values for variables
 : "${HOST:=https://bin.perosar.tech}"
 FORM_FIELD="highlight"
+. ~/.rbinrc 2>/dev/null
 
 # Ensure atleast one action is specified
 if [[ -z "${FILES[*]}" && -z "${SHORTS[*]}" && -z "${DELETES[*]}" ]]; then
@@ -64,13 +93,20 @@ fi
 
 # Copy-to-clipboard function
 clip() {
-	if [ -n "$(command -v termux-clipboard-set)" ]; then
-		# use timeout in case termux-api is installed but the termux:api app is missing
-		# taken from termux-info
-		timeout 3 termux-clipboard-set <<<"$1"
-		timeout 3 termux-toast "Copied to clipboard"
-	elif [ -n "$(command -v xclip)" ]; then
-		xclip -selection c <<<"$1"
+	if $CLIP_COPY; then
+		if [[ -n "$CLIP_CMD" ]]; then
+			$CLIP_CMD <<<"$1"
+			exit 0
+		fi
+
+		if [[ -n "$(command -v termux-clipboard-set)" ]]; then
+			# use timeout in case termux-api is installed but the termux:api app is missing
+			# taken from termux-info
+			timeout 3 termux-clipboard-set <<<"$1"
+			timeout 3 termux-toast "Copied to clipboard"
+		elif [[ -n "$(command -v xclip)" ]]; then
+			xclip -selection c <<<"$1"
+		fi
 	fi
 }
 
