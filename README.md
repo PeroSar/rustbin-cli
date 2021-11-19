@@ -22,6 +22,11 @@ $ ./rbin.sh -s https://google.com
 $ ./rbin.sh -f hello.txt -f bye.txt -e 30s # This paste will self-destruct in 30 seconds
 ```
 
+### Configure
+```bash
+$ ./rbin.sh -c
+```
+
 Execute `./rbin.sh` without any arguments for a detailed help menu.
 
 ## Screenshots
