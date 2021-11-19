@@ -138,6 +138,12 @@ paste_all() {
 
 	for file in "${FILES[@]}"; do
 
+		case "$file" in
+		"-")
+			local file="/dev/stdin"
+			;;
+		esac
+
 		local EXT
 		case "$file" in
 		*"."*)
@@ -146,7 +152,7 @@ paste_all() {
 		esac
 
 		# Handle errors if file doesn't exist
-		if [[ ! -f "$file" ]]; then
+		if [[ "$file" != "/dev/stdin" && ! -f "$file" ]]; then
 			bad "File '$file' doesn't exist!"
 			continue
 		fi

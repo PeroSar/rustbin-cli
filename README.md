@@ -7,6 +7,16 @@
 $ ./rbin.sh -f hello.txt -f bye.txt
 ```
 
+### Paste from stdin
+#### Bash & ZSH
+```bash
+$ command_that_errors |& ./rbin.sh -f -
+```
+#### Fish
+```fish
+$ command_that_errors &| ./rbin.sh -f -
+```
+
 ### Delete paste(s)
 ```bash
 $ ./rbin.sh -d aBcD.sh
