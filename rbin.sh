@@ -19,12 +19,13 @@ bad() {
 
 # Usage
 usage() {
-	echo -e "Usage: $0 ${G}[options..]${RT} <Arg>
+	echo -e "Usage: $0 ${G}[options..]${RT}
 ${G}-h${RT} <host> - Specify host (example: https://bin.cyberknight777.dev, https://bin.mangeshrex.me) (default: https://bin.perosar.tech)
 ${G}-e${RT} <time> - Set expire time (example: 1h)
 ${G}-d${RT} <PasteID> - Delete a paste (example: aBcD)
 ${G}-f${RT} <filename> - Paste a file (example: hello.txt)
-${G}-s${RT} <URL> - Shorten a URL (example: https://google.com)" >&2
+${G}-s${RT} <URL> - Shorten a URL (example: https://google.com)
+${G}-c${RT} - Generate config" >&2
 	exit 1
 }
 
