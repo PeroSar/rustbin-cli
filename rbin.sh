@@ -56,7 +56,7 @@ while getopts ":h:f:s:e:d:c" arg; do
 		"y" | "Y")
 			CLIP="true"
 			;;
-		"n" | "N")
+		*)
 			CLIP="false"
 			;;
 		esac
@@ -162,8 +162,14 @@ paste_all() {
 
 		local o
 		o=$(mkreq_form "$FORM_FIELD" "@${file}")
-		echo "Pasted to $o${EXT}"
-		clip "$o"
+
+
+        case "$o" in
+            "https://"*) echo "$o${EXT}" ;;
+            *) echo "failed!" ;;
+        esac
+
+		clip "$o${EXT}"
 
 	done
 }
