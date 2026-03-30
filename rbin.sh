@@ -22,7 +22,6 @@ usage() {
 	echo -e "Usage: $0 ${G}[options..]${RT}
 ${G}-h${RT} <host> - Specify host (example: https://bin.cyberknight777.dev, https://bin.mangeshrex.me) (default: https://bin.perosar.tech)
 ${G}-e${RT} <time> - Set expire time (example: 1h)
-${G}-d${RT} <PasteID> - Delete a paste (example: aBcD)
 ${G}-f${RT} <filename> - Paste a file (example: hello.txt)
 ${G}-s${RT} <URL> - Shorten a URL (example: https://google.com)
 ${G}-c${RT} - Generate config" >&2
@@ -30,7 +29,7 @@ ${G}-c${RT} - Generate config" >&2
 }
 
 # Parse command-line arguments
-while getopts ":h:f:s:e:d:c" arg; do
+while getopts ":h:f:s:e:c" arg; do
 	case "${arg}" in
 	"h")
 		HOST="${OPTARG}"
@@ -40,9 +39,6 @@ while getopts ":h:f:s:e:d:c" arg; do
 		;;
 	"s")
 		SHORTS+=("${OPTARG}")
-		;;
-	"d")
-		DELETES+=("${OPTARG}")
 		;;
 	"e")
 		EXPIRE_TIME="${OPTARG}"
@@ -89,8 +85,8 @@ FORM_FIELD="highlight"
 . ~/.rbinrc 2>/dev/null
 
 # Ensure atleast one action is specified
-if [[ -z "${FILES[*]}" && -z "${SHORTS[*]}" && -z "${DELETES[*]}" ]]; then
-	bad "Please specify ATLEAST one file to paste / delete or URL to shorten!"
+if [[ -z "${FILES[*]}" && -z "${SHORTS[*]}" ]]; then
+	bad "Please specify ATLEAST one file to paste or URL to shorten!"
 	usage
 fi
 
@@ -121,11 +117,6 @@ mkreq_form() {
 	else
 		curl --silent --header "Expire: ${EXPIRE_TIME}" --form "$1"="$2" "$HOST"
 	fi
-}
-
-# Make delete request
-mkreq_del() {
-	curl --silent --request DELETE "${HOST}/${1}"
 }
 
 paste_all() {
@@ -195,35 +186,5 @@ short_all() {
 	done
 }
 
-delete_all() {
-	if [[ -n "${DELETES[*]}" ]]; then
-		good "Deleting specified pastes"
-	fi
-
-	local START=0
-	local TOTAL="${#DELETES[@]}"
-
-	for paste in "${DELETES[@]}"; do
-		((START++))
-		echo -en "[${Y}${START}${RT}/${G}${TOTAL}${RT}] Deleting $paste... "
-
-		local o
-		o=$(mkreq_del "$paste")
-
-		case "$o" in
-		*"deleted"*)
-			echo "Deleted $paste"
-			;;
-		*"failed"*)
-			echo "No paste with ID $paste"
-			;;
-		*)
-			echo "Unknown error"
-			;;
-		esac
-	done
-}
-
 paste_all
 short_all
-delete_all
